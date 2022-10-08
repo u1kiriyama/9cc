@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     // tokenize and parse
     // result is stored in code
     user_input = argv[1];
-    tokenize();
+    token = tokenize();
     program();
 
     printf(".globl	_main\n");
@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 
     // prologue
     push_rbp();
-    printf("    mov fp, sp");
+    printf("    mov fp, sp\n");
     printf("    sub sp, sp, 208\n"); // alphabet x 8byte
 
     for (int i = 0; code[i]; i++) {
