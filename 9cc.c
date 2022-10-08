@@ -17,20 +17,20 @@ int main(int argc, char **argv) {
     printf("_main:\n");
 
     // prologue
-    push_rbp();
+    push(RBP);
     printf("    mov fp, sp\n");
     printf("    sub sp, sp, 208\n"); // alphabet x 8byte
 
     for (int i = 0; code[i]; i++) {
         gen(code[i]);
-        pop_rax();
+        pop(RAX);
     }
 
     // epilogue
     printf("    mov w0, w8\n");
-    pop_rax();
+    pop(RAX);
     printf("    mov sp, fp\n");
-    pop_rbp();
+    pop(RBP);
     printf("    ret\n");
     return 0;
 }
