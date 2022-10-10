@@ -10,6 +10,7 @@ int main(int argc, char **argv) {
     // result is stored in code
     user_input = argv[1];
     token = tokenize();
+    locals = calloc(1, sizeof(LVar));
     program();
 
     printf(".globl	_main\n");
