@@ -6,9 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define RAX "w8"
-#define RDI "w9"
+#define RAX "x8"
+#define RDI "x9"
 #define RBP "fp"
+#define IMM "x10"
 
 // input program
 char *user_input;

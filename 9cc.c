@@ -27,8 +27,8 @@ int main(int argc, char **argv) {
     }
 
     // epilogue
-    printf("    mov w0, w8\n");
-    pop(RAX);
+    printf("    mov x0, x8\n");
+    //pop(RAX);
     printf("    mov sp, fp\n");
     pop(RBP);
     printf("    ret\n");
