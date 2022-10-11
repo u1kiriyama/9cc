@@ -44,5 +44,7 @@ assert 0 "foo = 10; foo > 10;"
 assert 0 "foo = 10; foo < 10;"
 assert 1 "foo = 10; foo <= 10;"
 assert 1 "foo = 10; foo >= 10;"
+assert 5 "return 5;"
+assert 14 "a = 3; b = 5 * 6 -8; return a + b / 2;"
 
 echo OK

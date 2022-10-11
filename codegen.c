@@ -44,6 +44,14 @@ void gen(Node *node) {
         printf("    str x9, [x8]      ;ND_ASSIGN\n");
         push(RDI);
         return;
+    case ND_RETURN:
+        gen(node->lhs);
+        pop(RAX);
+        printf("    mov x0, x8\n");
+        printf("    mov sp, fp\n");
+        pop(RBP);
+        printf("    ret\n");
+        return;
     }
 
     gen(node->lhs);

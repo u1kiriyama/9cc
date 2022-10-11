@@ -21,8 +21,17 @@ LVar *find_lvar(Token *tok) {
         return NULL;
 }
 
+int is_alnum(char c) {
+    return ('a' <= c && c <= 'z') ||
+           ('Z' <= c && c <= 'Z') ||
+           ('0' <= c && c <= '9') ||
+           (c == '_');
+}
+
 bool consume(char *op) {
-    if (token->kind != TK_RESERVED || strlen(op) != token->len || memcmp(token->str, op, token->len))
+    if ((token->kind != TK_RESERVED && token->kind != TK_RETURN ) ||
+        strlen(op) != token->len ||
+        memcmp(token->str, op, token->len))
         return false;
     token = token->next;
     return true;
@@ -79,6 +88,15 @@ Token *tokenize() {
         if (isspace(*p)) {
             //printf("=== space ===\n");
             p++;
+            continue;
+        }
+        
+        if (strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
+            cur = new_token(TK_RETURN, cur, p, 6);
+            //token->kind = TK_RETURN;
+            //token->str = p;
+            //i++;
+            p += 6;
             continue;
         }
 
@@ -242,8 +260,19 @@ Node *expr() {
 }
 
 Node *stmt() {
-    Node *node = expr();
-    expect(";");
+    Node *node;
+
+    //if (consume(TK_RETURN)) {
+    if (consume("return")) {
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_RETURN;
+        node->lhs = expr();
+    } else {
+        node = expr();
+    }
+    if (!consume(";"))
+        error_at(token->str, "not ';'");
+    
     return node;
 }
 
