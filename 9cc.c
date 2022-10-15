@@ -6,6 +6,8 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    control_syntax_depth = 0;
+    control_syntax_depth_max = 0;
     // tokenize and parse
     // result is stored in code
     user_input = argv[1];
@@ -18,9 +20,11 @@ int main(int argc, char **argv) {
     printf("_main:\n");
 
     // prologue
+    printf(";===== prologue begin =====\n");
     push(RBP);
     printf("    mov fp, sp\n");
     printf("    sub sp, sp, 208\n"); // alphabet x 8byte
+    printf(";===== prologue end =====\n");
 
     for (int i = 0; code[i]; i++) {
         gen(code[i]);
@@ -28,9 +32,11 @@ int main(int argc, char **argv) {
     }
 
     // epilogue
+    printf(";===== epilogue begin =====\n");
     printf("    mov x0, x8\n");
     printf("    mov sp, fp\n");
     pop(RBP);
     printf("    ret\n");
+    printf(";===== epilogue end =====\n");
     return 0;
 }

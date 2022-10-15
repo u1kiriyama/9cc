@@ -49,6 +49,9 @@ typedef enum {
     ND_LT,
     ND_LE,
     ND_NUM,
+    ND_IF,
+    ND_IFELSE,
+    ND_ELSE,
     ND_RETURN,
 } NodeKind;
 
@@ -58,6 +61,7 @@ struct Node {
     Node *rhs;
     int val;      // for kind is ND_NUM
     int offset;   // for kind is ND_LVAR. offse from BP
+    int depth;    // control_syntax_depth
 };
 
 typedef struct LVar LVar;
@@ -99,3 +103,6 @@ void pop(char *reg);
 void gen(Node *node);
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_node_num(int val);
+
+int control_syntax_depth;
+int control_syntax_depth_max;

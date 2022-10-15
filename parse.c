@@ -1,5 +1,9 @@
 #include "9cc.h"
 
+int max(int a, int b) {
+    if (a > b) return a;
+    return b;
+}
 // error function
 void error_at(char *loc, char *fmt, ...) {
     va_list ap;
@@ -34,6 +38,15 @@ bool consume(char *op) {
         memcmp(token->str, op, token->len))
         return false;
     token = token->next;
+    return true;
+}
+
+bool peek(char *op) {
+    if ((token->kind != TK_RESERVED && token->kind != TK_RETURN ) ||
+        strlen(op) != token->len ||
+        memcmp(token->str, op, token->len))
+        return false;
+    // token = token->next;  just peek
     return true;
 }
 
@@ -100,6 +113,18 @@ Token *tokenize() {
             continue;
         }
 
+        if (startswitch(p, "if")) {
+            cur = new_token(TK_RESERVED, cur, p, 2);
+            p += 2;
+            continue;
+        }
+
+        if (startswitch(p, "else")) {
+            cur = new_token(TK_RESERVED, cur, p, 4);
+            p += 4;
+            continue;
+        }
+
         if (startswitch(p, "==") || startswitch(p, "!=") || startswitch(p, "<=") || startswitch(p, ">=")) {
             cur = new_token(TK_RESERVED, cur, p, 2);
             p += 2;
@@ -107,7 +132,7 @@ Token *tokenize() {
         }
 
         //if (*p == '+'  || *p == '-' || *p == '*' || *p == '/' || *p == '(' || *p == ')') {
-        if (strchr("+-*/()<>=;", *p)) {
+        if (strchr("+-*/(){}<>=;", *p)) {
             //printf("=== %c ===\n", *p);
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;
@@ -261,12 +286,38 @@ Node *expr() {
 
 Node *stmt() {
     Node *node;
-
+/*
+program = stmt*
+stmt    = expr ";"
+        | "if" "(" expr ")" stmt ("else" stmt)?
+        | "return" expr ";"
+*/
     //if (consume(TK_RETURN)) {
     if (consume("return")) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_RETURN;
         node->lhs = expr();
+    } else if (consume("if")) {
+        expect("(");
+        node = calloc(1, sizeof(Node));
+        control_syntax_depth = max(control_syntax_depth++, control_syntax_depth_max) + 1;
+        control_syntax_depth_max = control_syntax_depth;
+        node->depth = control_syntax_depth;
+        node->kind = ND_IF;
+        node->lhs = expr();
+        expect(")");
+        node->rhs = stmt();
+        if (peek("else")) {
+            node->kind = ND_IFELSE;  // if 'else' is found, overwite former kind.
+        }
+        return node;
+    } else if (consume("else")) {
+            node = calloc(1, sizeof(Node));
+            node->depth = control_syntax_depth;
+            node->kind = ND_ELSE;
+            node->lhs = stmt();
+            control_syntax_depth--;
+            return node;
     } else {
         node = expr();
     }
