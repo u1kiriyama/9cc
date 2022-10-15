@@ -306,7 +306,7 @@ stmt    = expr ";"
         node->kind = ND_IF;
         node->lhs = expr();
         expect(")");
-        node->rhs = stmt();
+        ifstatement_node = stmt();
         if (peek("else")) {
             node->kind = ND_IFELSE;  // if 'else' is found, overwite former kind.
         }

@@ -106,3 +106,4 @@ Node *new_node_num(int val);
 
 int control_syntax_depth;
 int control_syntax_depth_max;
+Node *ifstatement_node;

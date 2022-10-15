@@ -55,7 +55,8 @@ void gen(Node *node) {
         pop(RAX);
         printf("    cmp x8, #0\n");
         printf("    B.EQ .Lend%03d\n", node->depth);
-        gen(node->rhs);
+        gen(ifstatement_node);
+        //gen(node->rhs);
         printf("    .Lend%03d:\n", node->depth);
         return;
     case ND_IFELSE:
@@ -64,7 +65,8 @@ void gen(Node *node) {
         pop(RAX);
         printf("    cmp x8, #0\n");
         printf("    B.EQ .Lelse%03d\n", node->depth);
-        gen(node->rhs);
+        gen(ifstatement_node);
+        //gen(node->rhs);
         printf("    B .Lend%03d\n", node->depth);
         printf("    .Lelse%03d:\n", node->depth);
         return;
