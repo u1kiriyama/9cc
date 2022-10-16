@@ -20,7 +20,7 @@ void pop(char *reg) {
 void gen_lval(Node *node) {
     if (node->kind != ND_LVAR)
         printf("left value is not variable");
-    printf(";gen_lvel\n");
+    printf(";gen_lval\n");
     printf("    mov x8, fp\n");
     printf("    sub x8, x8, #%d\n", node->offset);
     push(RAX);
@@ -50,30 +50,53 @@ void gen(Node *node) {
         push(RDI);
         return;
     case ND_IF:
-        printf(";ND_IF\n");
+        printf(";ND_IF %03d\n", node->depth);
         gen(node->lhs);
         pop(RAX);
         printf("    cmp x8, #0\n");
         printf("    B.EQ .Lend%03d\n", node->depth);
-        gen(ifstatement_node);
+        block_part++;
+        //int tmp = block_part;
+        gen(block_node[block_part][0]);
+        //block_part++;
         //gen(node->rhs);
         printf("    .Lend%03d:\n", node->depth);
         return;
     case ND_IFELSE:
-        printf(";ND_IFELSE\n");
+        printf(";ND_IFELSE %03d\n", node->depth);
         gen(node->lhs);
         pop(RAX);
         printf("    cmp x8, #0\n");
         printf("    B.EQ .Lelse%03d\n", node->depth);
-        gen(ifstatement_node);
+        block_part++;
+        //int tmp = block_part;
+        gen(block_node[block_part][0]); // 0
+        //block_part++;
         //gen(node->rhs);
         printf("    B .Lend%03d\n", node->depth);
         printf("    .Lelse%03d:\n", node->depth);
         return;
     case ND_ELSE:
-        printf(";ND_ELSE\n");
-        gen(node->lhs);
+        printf(";ND_ELSE %03d\n", node->depth);
+        block_part++;
+        //int tmp = block_part;
+        gen(block_node[block_part][0]);
+        //block_part++;
+        //gen(node->lhs);
         printf("    .Lend%03d:\n", node->depth);
+        return;
+    case ND_BLOCK:
+        printf(";ND_BLOCK %d, %d\n", block_part, block_line);
+        block_line = 0;
+        block_part++;
+        //int tmp = block_part;
+        //int tmp_line = block_line;
+        while (block_node[block_part][block_line]) {
+            printf(";gen() in ND_BLOCK %d, %d\n", block_part, block_line);
+            gen(block_node[block_part][block_line]); // 1
+            block_line++;
+        }
+        //block_part++;
         return;
     case ND_RETURN:
         printf(";ND_RETURN\n");

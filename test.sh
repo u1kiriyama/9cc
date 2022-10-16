@@ -49,5 +49,9 @@ assert 14 "a = 3; b = 5 * 6 -8; return a + b / 2;"
 assert 5 "if (1 == 1) a = 5; else a = 10;"
 assert 10 "if (1 == 2) a = 5; else a = 10;"
 assert 15 "if (1 == 2) a = 5; else a = 10; if (1 == 1) a = 15; else a = 20;"
+assert 15 "if (1 == 2) {a = 5;} else {a = 10;} if (1 == 1) {a = 15;} else {a = 20;}"
+assert 8 "if (1 == 1) {a = 5; b = 3; return a+b;} else {a = 10; b = 15; return a+b;}"
+assert 25 "if (1 == 2) {a = 5; b = 3; return a+b;} else {a = 10; b = 15; return a+b;}"
+assert 1 "if (1 == 1) { if (1 == 1) {a=1;} else {a=2;} } else {a = 4;} " 
 
 echo OK

@@ -52,6 +52,7 @@ typedef enum {
     ND_IF,
     ND_IFELSE,
     ND_ELSE,
+    ND_BLOCK,
     ND_RETURN,
 } NodeKind;
 
@@ -106,4 +107,6 @@ Node *new_node_num(int val);
 
 int control_syntax_depth;
 int control_syntax_depth_max;
-Node *ifstatement_node;
+Node *block_node[10][10]; // block_node[ block part ][ lines ]
+int block_part;
+int block_line;
