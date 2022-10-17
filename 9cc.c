@@ -6,15 +6,14 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    control_syntax_depth = 0;
-    control_syntax_depth_max = 0;
     // tokenize and parse
     // result is stored in code
     user_input = argv[1];
     token = tokenize();
     locals = calloc(1, sizeof(LVar));
-    block_part = -1;
-    block_line = 0;
+
+    control_syntax_cnt = -1;
+    max_control_syntax_cnt = -1;
     program();
 
     printf(".globl	_main\n");
@@ -28,8 +27,6 @@ int main(int argc, char **argv) {
     printf("    sub sp, sp, 208\n"); // alphabet x 8byte
     printf(";===== prologue end =====\n");
 
-    block_part = -1;
-    block_line = 0;
     for (int i = 0; code[i]; i++) {
         gen(code[i]);
         pop(RAX);

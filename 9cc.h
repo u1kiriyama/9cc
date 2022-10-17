@@ -60,9 +60,12 @@ struct Node {
     NodeKind kind;
     Node *lhs;
     Node *rhs;
+    Node *cond;       // if, while, for
+    Node *statement;  // if ,while, for
+    Node *block_list[10];
     int val;      // for kind is ND_NUM
     int offset;   // for kind is ND_LVAR. offse from BP
-    int depth;    // control_syntax_depth
+    int control_syntax_cnt;    // control syntax
 };
 
 typedef struct LVar LVar;
@@ -97,7 +100,7 @@ Node *assign();
 Node *expr();
 Node *stmt();
 Node *program();
-Node *code[100];
+Node *code[10];
 
 void push(char *reg);
 void pop(char *reg);
@@ -105,8 +108,5 @@ void gen(Node *node);
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_node_num(int val);
 
-int control_syntax_depth;
-int control_syntax_depth_max;
-Node *block_node[10][10]; // block_node[ block part ][ lines ]
-int block_part;
-int block_line;
+int control_syntax_cnt;
+int max_control_syntax_cnt;

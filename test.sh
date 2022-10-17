@@ -52,6 +52,14 @@ assert 15 "if (1 == 2) a = 5; else a = 10; if (1 == 1) a = 15; else a = 20;"
 assert 15 "if (1 == 2) {a = 5;} else {a = 10;} if (1 == 1) {a = 15;} else {a = 20;}"
 assert 8 "if (1 == 1) {a = 5; b = 3; return a+b;} else {a = 10; b = 15; return a+b;}"
 assert 25 "if (1 == 2) {a = 5; b = 3; return a+b;} else {a = 10; b = 15; return a+b;}"
-assert 1 "if (1 == 1) { if (1 == 1) {a=1;} else {a=2;} } else {a = 4;} " 
+assert 1 "if (1 == 1) { if (1 == 1) { a = 1;} else { a = 2;} } else { a = 4;} " 
+assert 3 "if (1 == 1) {
+            if (1 == 1) { a = 1; b = 2; return a+b; } else { c = 2; d = 3; return c+d;}
+          } else { g = 100; h = 200; return g+h;}" 
+assert 1 "if (1==1) a=1; else {if (1==1) a=2; else a=3;}"
+assert 3 "if (1 == 1) {
+            if (1 == 1) { a = 1; b = 2; return a+b; } else { c = 2; d = 3; return c+d;}
+          } else { if (1 == 1) { e = 4; f = 5; return e+f;
+          } else { g = 100; h = 200; return g+h;} }" 
 
 echo OK

@@ -27,6 +27,7 @@ void gen_lval(Node *node) {
 }
 
 void gen(Node *node) {
+    if (!node) return;
     switch (node->kind) {
     case ND_NUM:
         printf(";ND_NUM\n");
@@ -50,53 +51,38 @@ void gen(Node *node) {
         push(RDI);
         return;
     case ND_IF:
-        printf(";ND_IF %03d\n", node->depth);
-        gen(node->lhs);
+        printf(";ND_IF %03d\n", node->control_syntax_cnt);
+        //gen(node->lhs);
+        gen(node->cond);
         pop(RAX);
         printf("    cmp x8, #0\n");
-        printf("    B.EQ .Lend%03d\n", node->depth);
-        block_part++;
-        //int tmp = block_part;
-        gen(block_node[block_part][0]);
-        //block_part++;
-        //gen(node->rhs);
-        printf("    .Lend%03d:\n", node->depth);
+        printf("    B.EQ .Lend%03d\n", node->control_syntax_cnt);
+        gen(node->statement);
+        printf("    .Lend%03d:\n", node->control_syntax_cnt);
         return;
     case ND_IFELSE:
-        printf(";ND_IFELSE %03d\n", node->depth);
-        gen(node->lhs);
+        printf(";ND_IFELSE %03d\n", node->control_syntax_cnt);
+        gen(node->cond);
         pop(RAX);
         printf("    cmp x8, #0\n");
-        printf("    B.EQ .Lelse%03d\n", node->depth);
-        block_part++;
-        //int tmp = block_part;
-        gen(block_node[block_part][0]); // 0
-        //block_part++;
-        //gen(node->rhs);
-        printf("    B .Lend%03d\n", node->depth);
-        printf("    .Lelse%03d:\n", node->depth);
+        printf("    B.EQ .Lelse%03d\n", node->control_syntax_cnt);
+        gen(node->statement);
+        printf("    B .Lend%03d\n", node->control_syntax_cnt);
+        printf("    .Lelse%03d:\n", node->control_syntax_cnt);
         return;
     case ND_ELSE:
-        printf(";ND_ELSE %03d\n", node->depth);
-        block_part++;
-        //int tmp = block_part;
-        gen(block_node[block_part][0]);
-        //block_part++;
-        //gen(node->lhs);
-        printf("    .Lend%03d:\n", node->depth);
+        printf(";ND_ELSE %03d\n", node->control_syntax_cnt);
+        gen(node->statement);
+        printf("    .Lend%03d:\n", node->control_syntax_cnt);
         return;
     case ND_BLOCK:
-        printf(";ND_BLOCK %d, %d\n", block_part, block_line);
-        block_line = 0;
-        block_part++;
-        //int tmp = block_part;
-        //int tmp_line = block_line;
-        while (block_node[block_part][block_line]) {
-            printf(";gen() in ND_BLOCK %d, %d\n", block_part, block_line);
-            gen(block_node[block_part][block_line]); // 1
-            block_line++;
+        printf(";ND_BLOCK\n");
+        int cnt = 0;
+        while (node->block_list[cnt]) {
+            printf(";gen() in ND_BLOCK %d\n", cnt);
+            gen(node->block_list[cnt]); // 1
+            cnt++;
         }
-        //block_part++;
         return;
     case ND_RETURN:
         printf(";ND_RETURN\n");

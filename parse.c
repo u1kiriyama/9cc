@@ -301,43 +301,37 @@ stmt    = expr ";"
     } else if (consume("{")) {
         node = calloc(1, sizeof(Node));
         node->kind = ND_BLOCK;
-        block_part++;
-        int tmp = block_part;
-        //block_line = 0;
-        int tmp_line = 0;
+        int cnt = 0;
         for (;;) {
             if (consume("}")) return node;
-            block_node[tmp][tmp_line] = stmt(); //[1][0], [3][0]
-            tmp_line++;
+            node->block_list[cnt] = stmt();
+            cnt++;
         }
-        //node->lhs = stmt();
         return node;
 
     } else if (consume("if")) {
         expect("(");
         node = calloc(1, sizeof(Node));
-        control_syntax_depth = max(control_syntax_depth, control_syntax_depth_max) + 1;
-        control_syntax_depth_max = control_syntax_depth;
-        node->depth = control_syntax_depth;
         node->kind = ND_IF;
-        node->lhs = expr();
+        node->cond = expr();
+        max_control_syntax_cnt++;
+        control_syntax_cnt = max_control_syntax_cnt;
+        max_control_syntax_cnt = control_syntax_cnt;
+        node->control_syntax_cnt = control_syntax_cnt;
         expect(")");
-        block_part++;
-        int tmp = block_part;
-        block_node[tmp][0] = stmt();
+        node->statement = stmt();
         if (peek("else")) {
             node->kind = ND_IFELSE;  // if 'else' is found, overwite former kind.
+        } else {
+            control_syntax_cnt--;
         }
         return node;
     } else if (consume("else")) {
             node = calloc(1, sizeof(Node));
-            node->depth = control_syntax_depth;
             node->kind = ND_ELSE;
-            block_part++;
-            int tmp = block_part;
-            block_node[tmp][0] = stmt(); // [2][0]
-            //node->lhs = stmt();
-            control_syntax_depth--;
+            node->control_syntax_cnt = control_syntax_cnt;
+            node->statement = stmt();
+            control_syntax_cnt--;
             return node;
     } else {
         node = expr();
@@ -350,7 +344,9 @@ stmt    = expr ";"
 
 Node *program() {
     int i = 0;
-    while (!at_eof())
+    while (!at_eof()) {
+        printf(";code[%d]\n", i);
         code[i++] = stmt();
+    }
     code[i] = NULL;
 }
