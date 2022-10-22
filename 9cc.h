@@ -53,6 +53,7 @@ typedef enum {
     ND_IFELSE,
     ND_ELSE,
     ND_WHILE,
+    ND_FOR,
     ND_BLOCK,
     ND_RETURN,
 } NodeKind;
@@ -61,8 +62,10 @@ struct Node {
     NodeKind kind;
     Node *lhs;
     Node *rhs;
-    Node *cond;       // if, while, for
-    Node *statement;  // if ,while, for
+    Node *init;       // initial statement for for(*; ; ;)
+    Node *fin;        //   final statement for for( ; ;*;)
+    Node *cond;       // if, while, for( ;*; ;)
+    Node *statement;  // if ,while, for( ; ; ;) { * }
     Node *block_list[10];
     int val;      // for kind is ND_NUM
     int offset;   // for kind is ND_LVAR. offse from BP

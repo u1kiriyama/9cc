@@ -131,6 +131,12 @@ Token *tokenize() {
             continue;
         }
 
+        if (startswitch(p, "for")) {
+            cur = new_token(TK_RESERVED, cur, p, 3);
+            p += 3;
+            continue;
+        }
+
         if (startswitch(p, "==") || startswitch(p, "!=") || startswitch(p, "<=") || startswitch(p, ">=")) {
             cur = new_token(TK_RESERVED, cur, p, 2);
             p += 2;
@@ -314,7 +320,6 @@ stmt    = expr ";"
             cnt++;
         }
         return node;
-
     } else if (consume("if")) {
         expect("(");
         node = calloc(1, sizeof(Node));
@@ -349,6 +354,23 @@ stmt    = expr ";"
         max_control_syntax_cnt = control_syntax_cnt;
         node->control_syntax_cnt = control_syntax_cnt;
         expect(")");
+        node->statement = stmt();
+        control_syntax_cnt--;
+        return node;
+    } else if (consume("for")) {
+        expect("(");
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_FOR;
+        node->init = expr();
+        expect(";");
+        node->cond = expr();
+        expect(";");
+        node->fin = expr();
+        expect(")");
+        max_control_syntax_cnt++;
+        control_syntax_cnt = max_control_syntax_cnt;
+        max_control_syntax_cnt = control_syntax_cnt;
+        node->control_syntax_cnt = control_syntax_cnt;
         node->statement = stmt();
         control_syntax_cnt--;
         return node;
