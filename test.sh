@@ -61,6 +61,9 @@ assert 1 "if (1==1) a=1; else if (1==1) a=2; else a=3;"
 assert 3 "if (1 == 1) {
             if (1 == 1) { a = 1; b = 2; return a+b; } else { c = 2; d = 3; return c+d;}
           } else { if (1 == 1) { e = 4; f = 5; return e+f;
-          } else { g = 100; h = 200; return g+h;} }" 
+          } else { g = 100; h = 200; return g+h;} }"  
+assert 10 "cnt=10;x=0; while (cnt) {x=x+1;cnt=cnt-1;} return x;"
 
+#assert 2 "cnt=3;x=0; while (cnt) {x=x+1;cnt=cnt-1;{if(cnt==1)return x;}}return x;"
+assert 105 "cnt=10;x=100; while (cnt>5) {cnt=cnt-1;x=x+1;} return x;"
 echo OK

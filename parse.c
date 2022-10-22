@@ -125,6 +125,12 @@ Token *tokenize() {
             continue;
         }
 
+        if (startswitch(p, "while")) {
+            cur = new_token(TK_RESERVED, cur, p, 5);
+            p += 5;
+            continue;
+        }
+
         if (startswitch(p, "==") || startswitch(p, "!=") || startswitch(p, "<=") || startswitch(p, ">=")) {
             cur = new_token(TK_RESERVED, cur, p, 2);
             p += 2;
@@ -333,6 +339,19 @@ stmt    = expr ";"
             node->statement = stmt();
             control_syntax_cnt--;
             return node;
+    } else if (consume("while")) {
+        expect("(");
+        node = calloc(1, sizeof(Node));
+        node->kind = ND_WHILE;
+        node->cond = expr();
+        max_control_syntax_cnt++;
+        control_syntax_cnt = max_control_syntax_cnt;
+        max_control_syntax_cnt = control_syntax_cnt;
+        node->control_syntax_cnt = control_syntax_cnt;
+        expect(")");
+        node->statement = stmt();
+        control_syntax_cnt--;
+        return node;
     } else {
         node = expr();
     }
@@ -345,7 +364,6 @@ stmt    = expr ";"
 Node *program() {
     int i = 0;
     while (!at_eof()) {
-        printf(";code[%d]\n", i);
         code[i++] = stmt();
     }
     code[i] = NULL;

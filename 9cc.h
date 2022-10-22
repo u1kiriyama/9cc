@@ -52,6 +52,7 @@ typedef enum {
     ND_IF,
     ND_IFELSE,
     ND_ELSE,
+    ND_WHILE,
     ND_BLOCK,
     ND_RETURN,
 } NodeKind;

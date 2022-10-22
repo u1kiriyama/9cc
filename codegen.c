@@ -75,6 +75,17 @@ void gen(Node *node) {
         gen(node->statement);
         printf("    .Lend%03d:\n", node->control_syntax_cnt);
         return;
+    case ND_WHILE:
+        printf(";ND_WHILE%03d\n", node->control_syntax_cnt);
+        printf("    .Lbegin%03d:\n", node->control_syntax_cnt);
+        gen(node->cond);
+        pop(RAX);
+        printf("    cmp x8, #0\n");
+        printf("    B.EQ .Lend%03d\n", node->control_syntax_cnt);
+        gen(node->statement);
+        printf("    B .Lbegin%03d\n", node->control_syntax_cnt);
+        printf("    .Lend%03d:\n", node->control_syntax_cnt);
+        return;
     case ND_BLOCK:
         printf(";ND_BLOCK\n");
         int cnt = 0;
