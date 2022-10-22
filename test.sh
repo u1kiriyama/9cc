@@ -57,7 +57,6 @@ assert 3 "if (1 == 1) {
             if (1 == 1) { a = 1; b = 2; return a+b; } else { c = 2; d = 3; return c+d;}
           } else { g = 100; h = 200; return g+h;}" 
 assert 1 "if (1==1) a=1; else {if (1==1) a=2; else a=3;}"
-assert 1 "if (1==1) a=1; else if (1==1) a=2; else a=3;"
 assert 3 "if (1 == 1) {
             if (1 == 1) { a = 1; b = 2; return a+b; } else { c = 2; d = 3; return c+d;}
           } else { if (1 == 1) { e = 4; f = 5; return e+f;
