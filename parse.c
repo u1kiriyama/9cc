@@ -215,6 +215,12 @@ Node *primary() {
             node->offset = lvar->offset;
             locals = lvar;
         }
+        if (consume("(")) {
+            node->kind = ND_FUNC;
+            node->funcname = lvar->name;
+            node->funcname[lvar->len] = '\0';
+            expect(")");
+        }
         return node;
     }
 

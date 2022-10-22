@@ -108,6 +108,14 @@ void gen(Node *node) {
             cnt++;
         }
         return;
+    case ND_FUNC:
+        printf(";ND_FUNC\n");
+        printf("    stp fp, lr, [sp, #-16]!\n");
+	    printf("    mov fp, sp\n");
+        //printf("    bl _foo;\n");
+        printf("    bl _%s\n", node->funcname);
+        printf("    ldp fp, lr, [sp], #16\n");
+        return;
     case ND_RETURN:
         printf(";ND_RETURN\n");
         gen(node->lhs);

@@ -55,6 +55,7 @@ typedef enum {
     ND_WHILE,
     ND_FOR,
     ND_BLOCK,
+    ND_FUNC,
     ND_RETURN,
 } NodeKind;
 
@@ -70,6 +71,7 @@ struct Node {
     int val;      // for kind is ND_NUM
     int offset;   // for kind is ND_LVAR. offse from BP
     int control_syntax_cnt;    // control syntax
+    char *funcname;    // for calling function
 };
 
 typedef struct LVar LVar;
