@@ -176,6 +176,71 @@ node->offset = (tok->str[0] - 'a' + 1) * 8;
 となっているので、このトークンを返しつつ、`next`に送らないといけない。
 
 ### ステップ12:制御構文
-今までは式文ごとにnodeをreturnしていたが、`gen`関数の`ND_IF`の中に式文が含まれる形になるため、これまでのように単純に書けない。そこで、専用の`Node *ifstatement_node`を用意した。次のステップでも似たようなことをやろうとしているみたいだったのでちょうどよかった。
+今までは式文ごとにnodeをreturnしていたが、`gen`関数の`ND_IF`の中に式文が含まれる形になるため、これまでのように単純に書けない。そこで、専用の`Node *ifstatement_node`を用意した。次のステップでも似たようなことをやろうとしているみたいだったのでちょうどよかった。エレガントさはなくなるが、その他多数メンバーを追加。アセンブリを読んで`sp`やレジスタの値を追いかけながらデバッグした。
+
+### ステップ14:関数呼び出し
+```call_foo.c
+#include <stdio.h>
+
+int main() {
+    extern int foo();
+    foo();
+}
+```
+```foo.c
+#include <stdio.h>
+int foo() {
+    printf("OKfoo\n");
+    return 0;
+}
+```
+`cc -S call_foo.c`で`call_foo.s`を生成し、中身を確認する。
+```call_foo.s
+.section	__TEXT,__text,regular,pure_instructions
+	.build_version macos, 12, 0	sdk_version 12, 3
+	.globl	_main                           ; -- Begin function main
+	.p2align	2
+_main:                                  ; @main
+	.cfi_startproc
+; %bb.0:
+	stp	x29, x30, [sp, #-16]!           ; 16-byte Folded Spill
+	mov	x29, sp
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	bl	_foo
+	mov	w0, #0
+	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
+	ret
+	.cfi_endproc
+                                        ; -- End function
+.subsections_via_symbols
+```
+`x29`->`fp`, `x30`->`lr`と置き換え、いらなさそうな箇所をコメントアウトして動作確認をすると下記まで削れる。
+```call_func_my.s
+;x29 fp
+;x30 lr
+	;.section	__TEXT,__text,regular,pure_instructions
+	;.build_version macos, 12, 0	sdk_version 12, 3
+	.globl	_main                           ; -- Begin function main
+	.p2align	2
+_main:                                  ; @main
+	;.cfi_startproc
+; %bb.0:
+	stp	fp, lr, [sp, #-16]!           ; 16-byte Folded Spill
+	mov	fp, sp
+	;.cfi_def_cfa w29, 16
+	;.cfi_offset w30, -8
+	;.cfi_offset w29, -16
+	bl	_foo
+	;mov	w0, #0
+	ldp	fp, lr, [sp], #16             ; 16-byte Folded Reload
+	ret
+	;.cfi_endproc
+                                        ; -- End function
+;.subsections_via_symbols
+```
+これをもとに`codegen.c`を修正。
+
 
 
