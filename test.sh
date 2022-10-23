@@ -4,7 +4,7 @@ assert() {
   input="$2"
 
   ./9cc "$input" > tmp.s
-  cc -o tmp tmp.s foo.o
+  cc -o tmp tmp.s ext.c
   ./tmp
   actual="$?"
 
@@ -12,7 +12,7 @@ assert() {
     echo "$input => $actual"
   else
     echo "$input => $expected expected, but got $actual"
-    exit 1
+    #exit 1
   fi
 }
 
@@ -62,10 +62,20 @@ assert 3 "if (1 == 1) {
           } else { if (1 == 1) { e = 4; f = 5; return e+f;
           } else { g = 100; h = 200; return g+h;} }"  
 assert 10 "cnt=10;x=0; while (cnt) {x=x+1;cnt=cnt-1;} return x;"
-
 #assert 2 "cnt=3;x=0; while (cnt) {x=x+1;cnt=cnt-1;{if(cnt==1)return x;}}return x;"
 assert 105 "cnt=10;x=100; while (cnt>5) {cnt=cnt-1;x=x+1;} return x;"
 assert 10 "cnt=0;for(a=0;a<10;a=a+1){cnt=cnt+1;} return cnt;"
 assert 50 "cnt=0;for(a=0;a<10;a=a+1){ b=0;while(b<5){b=b+1;cnt=cnt+1;}  } return cnt;"
-assert "OKfoo" "foo();"
+assert "foo" "foo();"
+#assert -15 "if (1==1) calc(1,2,3,4,5); else calc(5,4,3,2,1);"
+#assert 22 "if (1==0) calc(1,2,3,4,5); else calc(5,4,3,2,1);"
+assert -15 "calc(1,2,3,4,5);"
+assert 0 "calc(1,2,3,4,5);return 0;"
+assert -15 "if (1==1) calc(1,2,3,4,5);"
+assert -15 "if (1==1) calc(1,2,3,4,5); else a=1;"
+assert 1 "if (1==0) calc(1,2,3,4,5); else {a=1;return a;}"
+assert -15 "if (1==1) calc(1,2,3,4,5); else foo();"
+assert "foo" "if (1==0) calc(1,2,3,4,5); else foo();"
+assert -15 "if (1==1) calc(1,2,3,4,5); else calc(5,4,3,2,1);"
+assert 22 "if (1==0) calc(1,2,3,4,5); else calc2(5,4,3,2,1);"
 echo OK

@@ -28,6 +28,7 @@ void gen_lval(Node *node) {
 
 void gen(Node *node) {
     if (!node) return;
+    int cnt =0;
     switch (node->kind) {
     case ND_NUM:
         printf(";ND_NUM\n");
@@ -101,10 +102,10 @@ void gen(Node *node) {
         return;
     case ND_BLOCK:
         printf(";ND_BLOCK\n");
-        int cnt = 0;
+        //int cnt = 0;
         while (node->block_list[cnt]) {
             printf(";gen() in ND_BLOCK %d\n", cnt);
-            gen(node->block_list[cnt]); // 1
+            gen(node->block_list[cnt]);
             cnt++;
         }
         return;
@@ -112,7 +113,10 @@ void gen(Node *node) {
         printf(";ND_FUNC\n");
         printf("    stp fp, lr, [sp, #-16]!\n");
 	    printf("    mov fp, sp\n");
-        //printf("    bl _foo;\n");
+        while (node->block_list[cnt]) {
+            printf("    mov x%d, #%d\n", cnt,  node->block_list[cnt]->val);
+            cnt++;
+        }
         printf("    bl _%s\n", node->funcname);
         printf("    ldp fp, lr, [sp], #16\n");
         return;

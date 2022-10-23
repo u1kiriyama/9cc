@@ -144,7 +144,7 @@ Token *tokenize() {
         }
 
         //if (*p == '+'  || *p == '-' || *p == '*' || *p == '/' || *p == '(' || *p == ')') {
-        if (strchr("+-*/(){}<>=;", *p)) {
+        if (strchr("+-*/(){}<>=;,", *p)) {
             //printf("=== %c ===\n", *p);
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;
@@ -219,7 +219,14 @@ Node *primary() {
             node->kind = ND_FUNC;
             node->funcname = lvar->name;
             node->funcname[lvar->len] = '\0';
-            expect(")");
+            int cnt = 0;
+            for (;;) {
+                if (consume(")")) return node;
+                node->block_list[cnt] = expr();
+                cnt++;
+                consume(",");
+            }
+            //expect(")");
         }
         return node;
     }
