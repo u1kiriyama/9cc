@@ -18,15 +18,16 @@ int main(int argc, char **argv) {
 
     printf(".globl	_main\n");
 	printf(".p2align	2\n");
-    printf("_main:\n");
+    //printf("_main:\n");
 
+/*
     // prologue
     printf(";===== prologue begin =====\n");
     push(RBP);
     printf("    mov fp, sp\n");
     printf("    sub sp, sp, 208\n"); // alphabet x 8byte
     printf(";===== prologue end =====\n");
-
+*/
     for (int i = 0; code[i]; i++) {
         gen(code[i]);
         pop(RAX);

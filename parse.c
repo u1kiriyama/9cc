@@ -221,12 +221,20 @@ Node *primary() {
             node->funcname[lvar->len] = '\0';
             int cnt = 0;
             for (;;) {
-                if (consume(")")) return node;
+                if (consume(")")) {
+                    if (peek("{")) {
+                        break;
+                    }else{
+                        return node;
+                    }
+                }
                 node->block_list[cnt] = expr();
                 cnt++;
                 consume(",");
             }
-            //expect(")");
+            node->kind = ND_TOP;
+            node->statement = stmt();
+            return node;
         }
         return node;
     }
@@ -389,6 +397,9 @@ stmt    = expr ";"
         return node;
     } else {
         node = expr();
+        if (node->kind == ND_TOP) {
+            return node;
+        }
     }
     if (!consume(";"))
         error_at(token->str, "not ';'");

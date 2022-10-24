@@ -57,6 +57,7 @@ typedef enum {
     ND_BLOCK,
     ND_FUNC,
     ND_RETURN,
+    ND_TOP,
 } NodeKind;
 
 struct Node {

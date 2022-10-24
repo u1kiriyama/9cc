@@ -129,6 +129,17 @@ void gen(Node *node) {
         pop(RBP);
         printf("    ret\n");
         return;
+    case ND_TOP:
+        printf(";ND_TOP\n");
+        printf("_%s:\n", node->funcname);
+        // prologue
+        printf(";===== prologue begin =====\n");
+        push(RBP);
+        printf("    mov fp, sp\n");
+        printf("    sub sp, sp, 208\n"); // alphabet x 8byte
+        printf(";===== prologue end =====\n");
+        gen(node->statement);
+        return;
     }
 
     gen(node->lhs);
