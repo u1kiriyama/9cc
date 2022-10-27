@@ -83,5 +83,8 @@ assert -15 "main(){if (1==1) calc(1,2,3,4,5); else calc(5,4,3,2,1);}"
 assert 22 "main(){if (1==0) calc(1,2,3,4,5); else calc2(5,4,3,2,1);}"
 assert 3 "main(){a=1;b=2;return a+b;}"
 assert 10 "foo(){return 10;} main(){return foo();}"
+assert 6 "add(a,b,c){return a+b+c;}main(){ return add(1,2,3);}"
+assert 4 "add(a,b){if (a>b) return a; else return b;}main(){ return add(4,2);}"
+assert 4 "add(x,y){if (x>y) return x; else return y;}main(){a=4;b=2; return add(a,b);}"
 
 echo OK

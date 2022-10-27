@@ -22,8 +22,9 @@ void gen_lval(Node *node) {
         printf("left value is not variable");
     printf(";gen_lval\n");
     printf("    mov x8, fp\n");
-    printf("    sub x8, x8, #%d\n", node->offset);
+    printf("    sub x8, x8, #%d\n", node->offset - 16); // first offset is function name.
     push(RAX);
+    printf(";=== gen_lval\n");
 }
 
 void gen(Node *node) {
@@ -37,10 +38,13 @@ void gen(Node *node) {
         return;
     case ND_LVAR:
         printf(";ND_LVAR\n");
+        printf(";gen_lval begin\n");
         gen_lval(node);
+        printf(";gen_lval finish\n");
         pop(RAX);
         printf("    ldr x8, [x8]\n");
         push(RAX);
+        printf(";=== ND_LVAR\n");
         return;
     case ND_ASSIGN:
         printf(";ND_ASSIGN\n");
@@ -106,8 +110,10 @@ void gen(Node *node) {
         while (node->block_list[cnt]) {
             printf(";gen() in ND_BLOCK %d\n", cnt);
             gen(node->block_list[cnt]);
+            printf(";=== gen() in ND_BLOCK %d\n", cnt);
             cnt++;
         }
+        printf(";=== ND_BLOCK\n");
         return;
     case ND_FUNC:
         printf(";ND_FUNC\n");
@@ -119,15 +125,18 @@ void gen(Node *node) {
         }
         printf("    bl _%s\n", node->funcname);
         printf("    ldp fp, lr, [sp], #16\n");
+        push("x0");
+        printf(";=== ND_FUNC\n");
         return;
     case ND_RETURN:
         printf(";ND_RETURN\n");
         gen(node->lhs);
         pop(RAX);
-        printf("    mov x0, x8\n");
-        printf("    mov sp, fp\n");
+        printf("    mov x0, x8 ;in ND_RETURN\n");
+        printf("    mov sp, fp ;in ND_RETURN\n");
         pop(RBP);
-        printf("    ret\n");
+        printf("    ret ;in ND_RETURN\n");
+        printf(";=== ND_RETURN\n");
         return;
     case ND_TOP:
         printf(";ND_TOP\n");
@@ -136,9 +145,20 @@ void gen(Node *node) {
         printf(";===== prologue begin =====\n");
         push(RBP);
         printf("    mov fp, sp\n");
-        printf("    sub sp, sp, 208\n"); // alphabet x 8byte
+        //printf("    sub sp, sp, 208\n"); // alphabet x 8byte
+        while (node->block_list[cnt]) {
+            //printf("    mov x%d, #%d\n", cnt,  node->block_list[cnt]->val);
+            //gen(node->block_list[cnt]);
+            //printf("    push x%d\n", cnt);
+            //push(strcat("x", "1"));
+            printf("  ;push(not function)\n");
+            printf("    sub sp, sp, #16\n");
+            printf("    str x%d, [sp]\n", cnt);
+            cnt++;
+        }
         printf(";===== prologue end =====\n");
         gen(node->statement);
+        printf(";=== ND_TOP\n");
         return;
     }
 

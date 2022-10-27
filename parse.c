@@ -210,8 +210,10 @@ Node *primary() {
             lvar = calloc(1, sizeof(LVar));
             lvar->next = locals;
             lvar->name = tok->str;
+            //printf("===lvar->name : %s\n", lvar->name);
             lvar->len = tok->len;
-            lvar->offset = locals->offset + 8;
+            lvar->offset = locals->offset + 16;
+            //printf("===lvar->offset : %d\n", lvar->offset);
             node->offset = lvar->offset;
             locals = lvar;
         }
@@ -223,9 +225,9 @@ Node *primary() {
             for (;;) {
                 if (consume(")")) {
                     if (peek("{")) {
-                        break;
+                        break;        // difinition of a function
                     }else{
-                        return node;
+                        return node;  // function
                     }
                 }
                 node->block_list[cnt] = expr();
