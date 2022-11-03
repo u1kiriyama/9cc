@@ -35,12 +35,11 @@ void gen(Node *node) {
         printf(";ND_NUM\n");
         printf("    mov x10, #%d\n", node->val);
         push(IMM);
+        printf(";=== ND_NUM\n");
         return;
     case ND_LVAR:
         printf(";ND_LVAR\n");
-        printf(";gen_lval begin\n");
         gen_lval(node);
-        printf(";gen_lval finish\n");
         pop(RAX);
         printf("    ldr x8, [x8]\n");
         push(RAX);
@@ -52,8 +51,9 @@ void gen(Node *node) {
         gen(node->rhs);
         pop(RDI);
         pop(RAX);
-        printf("    str x9, [x8]\n");
+        //printf("    str x9, [x8]\n");
         push(RDI);
+        printf(";=== ND_ASSIGN\n");
         return;
     case ND_IF:
         printf(";ND_IF %03d\n", node->control_syntax_cnt);
@@ -159,6 +159,22 @@ void gen(Node *node) {
         printf(";===== prologue end =====\n");
         gen(node->statement);
         printf(";=== ND_TOP\n");
+        return;
+    case ND_ADDR:
+        printf(";ND_ADDR\n");
+        gen_lval(node->lhs);
+        printf(";=== ND_ADDR\n");
+        printf(".endADDR:\n");
+        return;
+    case ND_DEREF:
+        printf(";ND_DEREF\n");
+        gen(node->lhs);
+        //pop(RAX);
+        printf("    ldr x8, [sp] ;ND_DEREF\n");
+        printf("    ldr x8, [x8] ;ND_DEREF\n");
+        push(RAX);
+        printf(";=== ND_DEREF\n");
+        printf(".endDEREF:\n");
         return;
     }
 

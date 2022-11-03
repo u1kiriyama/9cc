@@ -86,5 +86,8 @@ assert 10 "foo(){return 10;} main(){return foo();}"
 assert 6 "add(a,b,c){return a+b+c;}main(){ return add(1,2,3);}"
 assert 4 "add(a,b){if (a>b) return a; else return b;}main(){ return add(4,2);}"
 assert 4 "add(x,y){if (x>y) return x; else return y;}main(){a=4;b=2; return add(a,b);}"
+assert 208 "main(){x=3;return &x;}"
+assert 3 "main(){x=3;y=&x;return *y;}" 
+assert 3 "main(){x=3;y=5;z=&y+16;return *z;}"
 
 echo OK

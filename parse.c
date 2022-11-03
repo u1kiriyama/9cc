@@ -144,7 +144,7 @@ Token *tokenize() {
         }
 
         //if (*p == '+'  || *p == '-' || *p == '*' || *p == '/' || *p == '(' || *p == ')') {
-        if (strchr("+-*/(){}<>=;,", *p)) {
+        if (strchr("+-*/(){}<>=;,&", *p)) {
             //printf("=== %c ===\n", *p);
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;
@@ -249,6 +249,18 @@ Node *unary() {
         return primary();
     if (consume("-"))
         return new_node(ND_SUB, new_node_num(0), primary());
+    if (consume("&")) {
+        Node *node = calloc(1, sizeof(Node));
+        node->kind = ND_ADDR;
+        node->lhs = unary();
+        return node;
+    }
+    if (consume("*")) {
+        Node *node = calloc(1, sizeof(Node));
+        node->kind = ND_DEREF;
+        node->lhs = unary();
+        return node;
+    }
     return primary();
 }
 

@@ -58,6 +58,8 @@ typedef enum {
     ND_FUNC,
     ND_RETURN,
     ND_TOP,
+    ND_ADDR,
+    ND_DEREF,
 } NodeKind;
 
 struct Node {
